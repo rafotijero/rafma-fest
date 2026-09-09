@@ -295,6 +295,22 @@
     box-shadow:0 14px 26px rgba(224,51,95,0.34);
   }
 
+  .form-error{
+    margin-top:12px;
+    color:#e0335f;
+    font-size:14px;
+    font-weight:600;
+    text-align:center;
+  }
+
+  .participants-empty{
+    text-align:center;
+    color:var(--ink);
+    opacity:0.6;
+    font-size:15px;
+    grid-column:1/-1;
+  }
+
   .rsvp-success{
     margin:34px auto 0;
     max-width:360px;
