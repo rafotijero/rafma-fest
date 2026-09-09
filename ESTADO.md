@@ -37,7 +37,7 @@ En este orden: **Invitación → Asistencia → Participantes → Ludoteca.**
 - **Invitación** — hero con logo, fecha, ubicación (link a Google Maps) y frase de invitación.
   El "Descubre más" del final es un enlace a `#confirmar`.
 - **Asistencia** — formulario de registro:
-  - Nombre, Apellidos, DNI (8 dígitos)
+  - Nombre, Apellidos, DNI/CE (8 a 10 dígitos)
   - Alias de jugador (opcional) + checkbox para usar el nombre en su lugar
   - Experiencia en juegos de mesa (Tutorial / Casual / Estratega / Deidad)
   - Frase que te define (selector con 8 opciones + "Otro" para escribir la propia)

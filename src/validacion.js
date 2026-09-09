@@ -12,7 +12,7 @@ export const FRASES = {
 };
 
 export function esDniValido(dni) {
-  return /^\d{8}$/.test(String(dni ?? '').trim());
+  return /^\d{8,10}$/.test(String(dni ?? '').trim());
 }
 
 /**
@@ -26,7 +26,7 @@ export function validarRegistro(body) {
     return { error: 'Nombre y apellidos son obligatorios.' };
   }
   if (!esDniValido(dni)) {
-    return { error: 'El DNI debe tener exactamente 8 dígitos.' };
+    return { error: 'El DNI/CE debe tener entre 8 y 10 dígitos.' };
   }
   if (!EXPERIENCIAS_VALIDAS.includes(experiencia)) {
     return { error: 'Experiencia no válida.' };

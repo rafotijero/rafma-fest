@@ -110,10 +110,10 @@
     <p class="edit-cue">¿Ya te registraste? <button type="button" class="btn-link" id="btn-editar">Edita tus datos aquí</button></p>
 
     <form class="rsvp-form lookup-form hidden" id="lookup-form" novalidate>
-      <p class="lookup-intro">Escribe el DNI con el que te registraste y traemos tus datos para que los cambies.</p>
+      <p class="lookup-intro">Escribe el DNI o carné de extranjería con el que te registraste y traemos tus datos para que los cambies.</p>
       <div class="form-field">
-        <label for="lookupDni">DNI</label>
-        <input type="text" id="lookupDni" inputmode="numeric" maxlength="8" placeholder="8 dígitos" autocomplete="off" required>
+        <label for="lookupDni">DNI / CE</label>
+        <input type="text" id="lookupDni" inputmode="numeric" maxlength="10" placeholder="8 a 10 dígitos" autocomplete="off" required>
       </div>
       <button type="submit" class="btn-submit">Buscar mi registro</button>
       <button type="button" class="btn-link" id="btn-cancelar-lookup">Cancelar</button>
@@ -121,7 +121,7 @@
 
     <form class="rsvp-form" id="rsvp-form" novalidate>
       <div class="edit-banner hidden" id="edit-banner">
-        ✏️ Estás editando el registro de <b id="edit-banner-nombre"></b>. Tu DNI no se puede cambiar.
+        ✏️ Estás editando el registro de <b id="edit-banner-nombre"></b>. Tu DNI/CE no se puede cambiar.
       </div>
       <div class="form-field">
         <label for="nombre">Nombre</label>
@@ -134,8 +134,8 @@
       </div>
 
       <div class="form-field">
-        <label for="dni">DNI</label>
-        <input type="text" id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="8 dígitos" autocomplete="off" required>
+        <label for="dni">DNI / CE</label>
+        <input type="text" id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8,10}" maxlength="10" placeholder="DNI (8 dígitos) o carné de extranjería (hasta 10)" autocomplete="off" required>
       </div>
 
       <div class="form-field">

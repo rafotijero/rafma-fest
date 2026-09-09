@@ -92,8 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     limpiarError(lookupForm);
 
-    if (!/^\d{8}$/.test(lookupDni.value)) {
-      mostrarError(lookupForm, 'El DNI debe tener exactamente 8 dígitos.');
+    if (!/^\d{8,10}$/.test(lookupDni.value)) {
+      mostrarError(lookupForm, 'El DNI/CE debe tener entre 8 y 10 dígitos.');
       return;
     }
 
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function soloDigitos(input) {
   input.addEventListener('input', () => {
-    input.value = input.value.replace(/\D/g, '').slice(0, 8);
+    input.value = input.value.replace(/\D/g, '').slice(0, 10);
   });
 }
 

@@ -16,7 +16,7 @@ export async function consulta(request, env) {
 
   const dni = String(body?.dni ?? '').trim();
   if (!esDniValido(dni)) {
-    return json({ error: 'El DNI debe tener exactamente 8 dígitos.' }, 400);
+    return json({ error: 'El DNI/CE debe tener entre 8 y 10 dígitos.' }, 400);
   }
 
   try {
