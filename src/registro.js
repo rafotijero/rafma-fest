@@ -1,3 +1,5 @@
+import { json } from './http.js';
+
 const EXPERIENCIAS_VALIDAS = ['tutorial', 'casual', 'estratega', 'deidad'];
 
 const FRASES = {
@@ -11,7 +13,7 @@ const FRASES = {
   'es-normal': 'Tranquilos, perder contra mí no da vergüenza; es lo normal.',
 };
 
-export async function onRequestPost({ request, env }) {
+export async function registro(request, env) {
   let body;
   try {
     body = await request.json();
@@ -63,11 +65,4 @@ export async function onRequestPost({ request, env }) {
     console.error(err);
     return json({ error: 'Error interno al guardar el registro.' }, 500);
   }
-}
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
 }

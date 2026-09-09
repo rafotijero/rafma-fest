@@ -1,9 +1,14 @@
-name = "rafma"
+name = "rafma-fest"
+main = "worker.js"
 compatibility_date = "2024-09-23"
-pages_build_output_dir = "."
+
+# El sitio estático (index.html, styles.css, script.js) se sirve desde public/.
+# Las rutas que no coinciden con un archivo ahí caen al Worker de worker.js.
+[assets]
+directory = "./public"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "rafma-db"
-# Reemplaza este ID con el que genera `wrangler d1 create rafma-db`
-database_id = "PLACEHOLDER_REPLACE_WITH_REAL_ID"
+# ID de la base de datos rafma-db en Cloudflare
+database_id = "eb47a39d-97b7-4ac8-b216-747b27e2aac2"

@@ -7,21 +7,26 @@ Landing page para la 2da edición del RAFMA Fest (sábado 10 de octubre de 2026)
 ## Estructura actual
 
 ```
-index.html              → estructura de la página
-styles.css              → todos los estilos
-script.js               → interactividad del formulario + carga dinámica de participantes
-wrangler.toml           → config de Cloudflare Pages + binding D1 (falta poner el database_id real)
-schema.sql              → definición de la tabla participantes para D1
-functions/
-  api/
-    registro.js         → POST /api/registro — valida y guarda en D1
-    participantes.js    → GET /api/participantes — devuelve la lista desde D1
-index.js                → placeholder sin uso (queda de la plantilla inicial)
-package.json            → sin dependencias reales todavía
+public/                 → el sitio estático que ve el visitante
+  index.html            → estructura de la página
+  styles.css            → todos los estilos
+  script.js             → interactividad del formulario + carga dinámica de participantes
+worker.js               → punto de entrada del Worker: enruta /api/* a los handlers
+src/
+  registro.js           → POST /api/registro — valida y guarda en D1
+  participantes.js      → GET /api/participantes — devuelve la lista desde D1
+  http.js               → helper json() para las respuestas
+wrangler.toml           → config del Worker: assets desde public/ + binding D1
+schema.sql              → definición de la tabla participantes (ya aplicada en D1)
+package.json            → sin dependencias; scripts dev/deploy con wrangler
 ```
 
-Sitio estático con Cloudflare Pages Functions como backend y D1 como base de datos.
-**El backend está implementado en el código pero aún no está conectado en Cloudflare** (ver siguiente sección).
+Es un **Worker con static assets**: Cloudflare sirve primero los archivos de `public/`, y
+cualquier ruta que no corresponda a un archivo (como `/api/registro`) cae al Worker.
+
+> Nota: el proyecto nació escrito para Cloudflare Pages (`functions/` con `onRequestPost`/
+> `onRequestGet`). Se migró a Workers porque Cloudflare ya no ofrece crear proyectos Pages
+> nuevos desde el dashboard.
 
 ## Secciones de la página
 
@@ -35,38 +40,22 @@ Sitio estático con Cloudflare Pages Functions como backend y D1 como base de da
   - Al enviar, hace `fetch POST /api/registro` y muestra confirmación o error inline.
 - **Participantes** — tarjetas cargadas dinámicamente desde `GET /api/participantes`. El grid está vacío en el HTML; se llena con JS al cargar la página.
 
-## Pendiente: configurar Cloudflare
+## Estado del despliegue
 
-El código está listo y subido a GitHub. Solo falta conectarlo en Cloudflare:
+- [x] Base de datos D1 `rafma-db` creada (id en `wrangler.toml`)
+- [x] Tabla `participantes` creada con `schema.sql`
+- [ ] Worker creado en Cloudflare conectado al repo `rafotijero/rafma-fest`
+- [ ] Dominio `rafma.rafotijero.dev`
 
-### 1. Crear el proyecto en Cloudflare Pages
-- Ir a dash.cloudflare.com → Workers & Pages → Create → Pages
-- Conectar el repo `rafotijero/rafma-fest` en GitHub
-- Build command: vacío. Build output directory: `/`
-- Hacer el primer deploy
+### Crear el Worker
+- Dashboard → Compute → Workers & Pages → Create → Import a repository
+- Repo: `rafotijero/rafma-fest`
+- Build command: vacío. Deploy command: `npx wrangler deploy`
+- El binding D1 no se configura en el dashboard: sale de `wrangler.toml`
 
-### 2. Crear la base de datos D1
-```bash
-npm install -g wrangler
-wrangler login
-wrangler d1 create rafma-db
-# Copia el database_id que te devuelve
-```
-- Pegar el `database_id` en `wrangler.toml` (reemplazar `PLACEHOLDER_REPLACE_WITH_REAL_ID`)
-- Crear la tabla:
-```bash
-wrangler d1 execute rafma-db --remote --file=schema.sql
-```
-- Hacer commit y push del `wrangler.toml` actualizado
-
-### 3. Conectar el binding D1 en Pages
-- En el dashboard → proyecto Pages → Settings → Bindings → Add → D1 database
-- Variable name: `DB`, base de datos: `rafma-db`
-- Guardar y redeploy
-
-### 4. Dominio personalizado
-- En el proyecto Pages → Custom domains → `rafma.rafotijero.dev`
-- Cloudflare agrega el DNS automáticamente si `rafotijero.dev` ya está en Cloudflare
+### Dominio personalizado
+- Worker → Settings → Domains & Routes → Add → Custom domain → `rafma.rafotijero.dev`
+- Cloudflare agrega el DNS automáticamente porque `rafotijero.dev` ya está en la cuenta
 
 ## Pendiente: funcionalidades futuras
 
