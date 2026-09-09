@@ -15,9 +15,9 @@
   <div class="brand">RAFMA <span>Fest</span></div>
   <ul>
     <li><a href="#invitacion">Invitación</a></li>
-    <li><a href="#ludoteca">Ludoteca</a></li>
     <li><a href="#confirmar">Asistencia</a></li>
     <li><a href="#participantes">Participantes</a></li>
+    <li><a href="#ludoteca">Ludoteca</a></li>
   </ul>
 </nav>
 
@@ -66,26 +66,14 @@
       Cómo llegar en Google Maps
     </a>
 
-    <div class="scroll-cue">
+    <a class="scroll-cue" href="#confirmar">
       <span>DESCUBRE MÁS</span>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
-    </div>
+    </a>
   </div>
 </section>
 
-<!-- ================= LUDOTECA ================= -->
-<section id="ludoteca" class="alt">
-  <div class="section-inner">
-    <div class="section-icon">🧩</div>
-    <h2 class="section-title">Ludo<span>teca</span></h2>
-    <p class="section-sub">Aquí iremos publicando el catálogo completo de los juegos que tenemos en casa, para que elijas con cuál quieres jugar ese día.</p>
-    <div class="soon-card">
-      <div class="emoji">🎲</div>
-      <h3>¡Próximamente!</h3>
-      <p>Estamos armando la lista completa de juegos. Vuelve pronto para verla.</p>
-    </div>
-  </div>
-</section>
+
 
 <!-- ================= CONFIRMAR ASISTENCIA ================= -->
 <section id="confirmar">
@@ -94,7 +82,22 @@
     <h2 class="section-title">Suma tu <span>Ficha</span> al Juego</h2>
     <p class="section-sub">Completa tus datos para asegurar tu lugar en la fiesta.</p>
 
+    <p class="edit-cue">¿Ya te registraste? <button type="button" class="btn-link" id="btn-editar">Edita tus datos aquí</button></p>
+
+    <form class="rsvp-form lookup-form hidden" id="lookup-form" novalidate>
+      <p class="lookup-intro">Escribe el DNI con el que te registraste y traemos tus datos para que los cambies.</p>
+      <div class="form-field">
+        <label for="lookupDni">DNI</label>
+        <input type="text" id="lookupDni" inputmode="numeric" maxlength="8" placeholder="8 dígitos" autocomplete="off" required>
+      </div>
+      <button type="submit" class="btn-submit">Buscar mi registro</button>
+      <button type="button" class="btn-link" id="btn-cancelar-lookup">Cancelar</button>
+    </form>
+
     <form class="rsvp-form" id="rsvp-form" novalidate>
+      <div class="edit-banner hidden" id="edit-banner">
+        ✏️ Estás editando el registro de <b id="edit-banner-nombre"></b>. Tu DNI no se puede cambiar.
+      </div>
       <div class="form-field">
         <label for="nombre">Nombre</label>
         <input type="text" id="nombre" name="nombre" autocomplete="given-name" required>
@@ -153,7 +156,7 @@
     <div class="rsvp-success hidden" id="rsvp-success">
       <div class="emoji">✅</div>
       <h3>¡Listo, <span id="successName"></span>!</h3>
-      <p>Tu ficha quedó anotada. Nos vemos el 10 de octubre para jugar.</p>
+      <p id="successText">Tu ficha quedó anotada. Nos vemos el 10 de octubre para jugar.</p>
     </div>
   </div>
 </section>
@@ -166,6 +169,20 @@
     <p class="section-sub">Estos son los valientes que ya confirmaron su lugar.</p>
 
     <div class="participants-grid" id="participants-grid"></div>
+  </div>
+</section>
+
+<!-- ================= LUDOTECA ================= -->
+<section id="ludoteca" class="alt">
+  <div class="section-inner">
+    <div class="section-icon">🧩</div>
+    <h2 class="section-title">Ludo<span>teca</span></h2>
+    <p class="section-sub">Aquí iremos publicando el catálogo completo de los juegos que tenemos en casa, para que elijas con cuál quieres jugar ese día.</p>
+    <div class="soon-card">
+      <div class="emoji">🎲</div>
+      <h3>¡Próximamente!</h3>
+      <p>Estamos armando la lista completa de juegos. Vuelve pronto para verla.</p>
+    </div>
   </div>
 </section>
 
