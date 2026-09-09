@@ -70,9 +70,22 @@ enlaces internos no dejen el título tapado.
 - [x] Base de datos D1 `rafma-db` creada (id en `wrangler.toml`)
 - [x] Tabla `participantes` creada con `schema.sql`
 - [x] Worker `rafma-fest` conectado al repo `rafotijero/rafma-fest` — cada push a `main` despliega solo
-- [ ] Dominio `rafma.rafotijero.dev`
+- [x] Dominio `rafma.rafotijero.dev`
 
-URL actual: https://rafma-fest.rafo-tijero.workers.dev
+**El sitio vive en https://rafma.rafotijero.dev** (la URL `rafma-fest.rafo-tijero.workers.dev`
+sigue respondiendo, pero la canónica es la del dominio propio).
+
+### Vista previa al compartir el enlace
+
+El `<head>` lleva etiquetas Open Graph para que WhatsApp, Facebook, LinkedIn y Telegram
+muestren título, descripción e imagen. La imagen es `public/og.png`, de 1200x630: el logo
+del hero compuesto sobre el fondo crema con un script de un solo uso, sin dependencias.
+
+> `og:url` y `og:image` **tienen que ser URL absolutas**. Si el dominio cambia, hay que
+> editarlas a mano en `public/index.html`; no se resuelven solas.
+
+Para regenerar `og.png` si el logo cambia: extraer el base64 del `<img class="logo-img">`
+y centrarlo en un lienzo de 1200x630 con el color `--cream` (#fdf7ec).
 
 ### Crear el Worker
 - Dashboard → Compute → Workers & Pages → Create → Import a repository
