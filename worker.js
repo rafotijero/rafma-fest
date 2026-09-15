@@ -1,6 +1,7 @@
 import { registro, actualizar } from './src/registro.js';
 import { participantes } from './src/participantes.js';
 import { consulta } from './src/consulta.js';
+import { asistencia } from './src/asistencia.js';
 import { json } from './src/http.js';
 
 export default {
@@ -17,6 +18,11 @@ export default {
     if (pathname === '/api/consulta') {
       if (metodo !== 'POST') return json({ error: 'Método no permitido.' }, 405);
       return consulta(request, env);
+    }
+
+    if (pathname === '/api/asistencia') {
+      if (metodo !== 'POST') return json({ error: 'Método no permitido.' }, 405);
+      return asistencia(request, env);
     }
 
     if (pathname === '/api/participantes') {

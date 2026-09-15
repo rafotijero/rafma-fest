@@ -21,7 +21,7 @@ export async function consulta(request, env) {
 
   try {
     const fila = await env.DB.prepare(
-      `SELECT nombre, apellidos, dni, alias, usa_nombre, experiencia, frase
+      `SELECT nombre, apellidos, dni, alias, usa_nombre, experiencia, frase, asistira
          FROM participantes
         WHERE dni = ?`
     ).bind(dni).first();

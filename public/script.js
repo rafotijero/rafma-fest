@@ -1,3 +1,14 @@
+const FECHA_EVENTO = '31 de octubre';
+
+// Despedidas para quien se da de baja: se elige una al azar, para que el
+// mensaje no suene a trámite. Cada una trae su propio emoji grande.
+const DESPEDIDAS = [
+  { emoji: '💔', texto: 'No será lo mismo sin ti…\u00A0😢' },
+  { emoji: '😭', texto: 'Nos vas a hacer falta en la mesa.\u00A0🎲💔' },
+  { emoji: '🪑', texto: 'Guardamos tu silla, por si acaso.\u00A0💛✨' },
+  { emoji: '🥺', texto: 'La mesa te va a extrañar…\u00A0🎲😢' },
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   cargarParticipantes();
 
@@ -13,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const fraseSelect = document.getElementById('frase');
   const fraseOtroInput = document.getElementById('fraseOtro');
   const successBox = document.getElementById('rsvp-success');
-  const successName = document.getElementById('successName');
+  const successEmoji = document.getElementById('successEmoji');
+  const successTitle = document.getElementById('successTitle');
   const successText = document.getElementById('successText');
   const submitBtn = form.querySelector('.btn-submit');
 
@@ -26,12 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCancelarLookup = document.getElementById('btn-cancelar-lookup');
   const lookupBtn = lookupForm.querySelector('.btn-submit');
 
+  const asistenciaBox = document.getElementById('asistencia-box');
+  const bajaAviso = document.getElementById('baja-aviso');
+  const bajaConfirm = document.getElementById('baja-confirm');
+  const btnBaja = document.getElementById('btn-baja');
+  const btnBajaSi = document.getElementById('btn-baja-si');
+  const btnBajaNo = document.getElementById('btn-baja-no');
+  const btnVolver = document.getElementById('btn-volver');
+
   const aliasPlaceholder = aliasInput.placeholder;
   const TEXTO_ALTA = 'Confirmar mi asistencia 🎉';
   const TEXTO_EDICION = 'Guardar mis cambios ✅';
 
   // DNI del registro que se está editando; null significa "alta nueva".
   let editandoDni = null;
+  // Si el registro que se está editando sigue en la lista o ya se dio de baja.
+  let asistiraActual = true;
   let aliasPrevValue = '';
 
   // ---------- Comportamiento del formulario ----------
@@ -156,6 +178,77 @@ document.addEventListener('DOMContentLoaded', () => {
     editCue.classList.add('hidden');
     submitBtn.textContent = TEXTO_EDICION;
     limpiarError(form);
+
+    asistiraActual = p.asistira !== 0;
+    aplicarEstadoAsistencia();
+  }
+
+  // ---------- Baja y regreso a la lista ----------
+
+  function aplicarEstadoAsistencia() {
+    asistenciaBox.classList.remove('hidden');
+    bajaConfirm.classList.add('hidden');
+    btnBaja.classList.toggle('hidden', !asistiraActual);
+    bajaAviso.classList.toggle('hidden', asistiraActual);
+    btnVolver.classList.toggle('hidden', asistiraActual);
+  }
+
+  btnBaja.addEventListener('click', () => {
+    bajaConfirm.classList.remove('hidden');
+    btnBaja.classList.add('hidden');
+  });
+
+  btnBajaNo.addEventListener('click', () => {
+    bajaConfirm.classList.add('hidden');
+    btnBaja.classList.remove('hidden');
+  });
+
+  btnBajaSi.addEventListener('click', () => cambiarAsistencia(false, btnBajaSi, 'Avisando...'));
+  btnVolver.addEventListener('click', () => cambiarAsistencia(true, btnVolver, 'Confirmando...'));
+
+  async function cambiarAsistencia(asistira, boton, textoOcupado) {
+    limpiarError(form);
+    const textoOriginal = boton.textContent;
+    boton.disabled = true;
+    boton.textContent = textoOcupado;
+
+    try {
+      const res = await fetch('/api/asistencia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dni: editandoDni, asistira }),
+      });
+
+      if (res.ok) {
+        asistiraActual = asistira;
+        const despedida = alAzar(DESPEDIDAS);
+        mostrarExito(
+          asistira ? '🎉' : despedida.emoji,
+          asistira ? '¡Qué bueno tenerte de vuelta! 🥳' : despedida.texto,
+          asistira
+            ? `Tu ficha vuelve a la lista. Nos vemos el ${FECHA_EVENTO} para jugar.`
+            : 'Sacamos tu ficha de la lista, pero la puerta queda abierta: entra con tu DNI/CE en "Edita tus datos aquí" y vuelve a confirmar cuando quieras.'
+        );
+        cargarParticipantes();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        mostrarError(form, err.error || 'No pudimos actualizar tu asistencia. Intenta de nuevo.');
+      }
+    } catch {
+      mostrarError(form, 'Error de conexión. Intenta de nuevo.');
+    } finally {
+      boton.disabled = false;
+      boton.textContent = textoOriginal;
+    }
+  }
+
+  function mostrarExito(emoji, titulo, texto) {
+    successEmoji.textContent = emoji;
+    successTitle.textContent = titulo;
+    successText.textContent = texto;
+    form.classList.add('hidden');
+    editCue.classList.add('hidden');
+    successBox.classList.remove('hidden');
   }
 
   // ---------- Envío ----------
@@ -192,13 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (res.ok) {
-        successName.textContent = (!data.sinAlias && data.alias) ? data.alias : data.nombre;
-        successText.textContent = editando
-          ? 'Actualizamos tus datos. Nos vemos el 10 de octubre para jugar.'
-          : 'Tu ficha quedó anotada. Nos vemos el 10 de octubre para jugar.';
-        form.classList.add('hidden');
-        editCue.classList.add('hidden');
-        successBox.classList.remove('hidden');
+        const comoTeLlamamos = (!data.sinAlias && data.alias) ? data.alias : data.nombre;
+        mostrarExito(
+          '✅',
+          `¡Listo, ${comoTeLlamamos}!`,
+          editando
+            ? `Actualizamos tus datos. Nos vemos el ${FECHA_EVENTO} para jugar.`
+            : `Tu ficha quedó anotada. Nos vemos el ${FECHA_EVENTO} para jugar.`
+        );
         cargarParticipantes();
       } else {
         const err = await res.json().catch(() => ({}));
@@ -241,16 +335,36 @@ async function cargarParticipantes() {
   try {
     const res = await fetch('/api/participantes');
     if (!res.ok) return;
-    const participantes = await res.json();
+    const datos = await res.json();
+    const lista = datos.lista ?? [];
 
-    if (participantes.length === 0) {
+    if (lista.length === 0) {
       grid.innerHTML = '<p class="participants-empty">Aún no hay participantes confirmados. ¡Sé el primero!</p>';
     } else {
-      grid.innerHTML = participantes.map(renderCard).join('');
+      grid.innerHTML = lista.map(renderCard).join('');
     }
+
+    mostrarBajas(datos.bajas ?? 0);
   } catch {
     // Falla silenciosa: la sección queda vacía si no hay conexión
   }
+}
+
+/** Cuántos avisaron que ya no vienen. Sin nombres: la nota es anónima a propósito. */
+function mostrarBajas(bajas) {
+  const nota = document.getElementById('bajas-nota');
+  if (!nota) return;
+
+  nota.classList.toggle('hidden', bajas === 0);
+  if (bajas === 0) return;
+
+  nota.textContent = bajas === 1
+    ? '💌 1 persona avisó que ya no podrá venir.'
+    : `💌 ${bajas} personas avisaron que ya no podrán venir.`;
+}
+
+function alAzar(opciones) {
+  return opciones[Math.floor(Math.random() * opciones.length)];
 }
 
 function renderCard(p) {

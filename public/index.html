@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAFMA Fest — 2da edición</title>
-<meta name="description" content="Sábado 10 de octubre de 2026, 5:00 p.m. en Jesús María. Juegos de mesa, torneo y celebración. Confirma tu asistencia.">
+<meta name="description" content="Sábado 31 de octubre de 2026, 6:00 p.m. en Jesús María. Juegos de mesa, torneo y celebración. Confirma tu asistencia.">
 <meta name="theme-color" content="#fdf7ec">
 
 <link rel="canonical" href="https://rafma.rafotijero.dev/">
@@ -17,7 +17,7 @@
 <meta property="og:locale" content="es_PE">
 <meta property="og:url" content="https://rafma.rafotijero.dev/">
 <meta property="og:title" content="RAFMA Fest — 2da edición">
-<meta property="og:description" content="Sábado 10 de octubre de 2026, 5:00 p.m. en Jesús María. Juegos de mesa, torneo y celebración. Confirma tu asistencia.">
+<meta property="og:description" content="Sábado 31 de octubre de 2026, 6:00 p.m. en Jesús María. Juegos de mesa, torneo y celebración. Confirma tu asistencia.">
 <meta property="og:image" content="https://rafma.rafotijero.dev/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
@@ -26,7 +26,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RAFMA Fest — 2da edición">
-<meta name="twitter:description" content="Sábado 10 de octubre de 2026, 5:00 p.m. en Jesús María. Juegos de mesa, torneo y celebración. Confirma tu asistencia.">
+<meta name="twitter:description" content="Sábado 31 de octubre de 2026, 6:00 p.m. en Jesús María. Juegos de mesa, torneo y celebración. Confirma tu asistencia.">
 <meta name="twitter:image" content="https://rafma.rafotijero.dev/og.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,9 +55,12 @@
     <p class="tagline">Donde cada juego se convierte en una historia para recordar 🎲</p>
 
     <div class="date-band">
-      Sábado 10 de octubre
-      <span class="date-year">2026 &nbsp;·&nbsp; 5:00 P.M.</span>
+      Sábado 31 de octubre
+      <span class="date-year">2026 &nbsp;·&nbsp; 6:00 P.M.</span>
     </div>
+
+    <!-- Aviso de reprogramación: quitar cuando ya todos estén al tanto. -->
+    <p class="date-change">📅 <b>Nueva fecha.</b> Antes era el sábado 10 de octubre.</p>
 
     <div class="info-row">
       <div class="info-card">
@@ -67,14 +70,14 @@
           <line x1="8" y1="3" x2="8" y2="7"></line>
           <line x1="16" y1="3" x2="16" y2="7"></line>
         </svg>
-        Sábado, <b>10 de octubre de 2026</b>
+        Sábado, <b>31 de octubre de 2026</b>
       </div>
       <div class="info-card">
         <svg viewBox="0 0 24 24" fill="none" stroke="#2f8f88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"></circle>
           <path d="M12 7v5l3 3"></path>
         </svg>
-        Hora: <b>5:00 p.m.</b>
+        Hora: <b>6:00 p.m.</b>
       </div>
       <div class="info-card">
         <svg viewBox="0 0 24 24" fill="#e0335f">
@@ -176,12 +179,30 @@
       </div>
 
       <button type="submit" class="btn-submit">Confirmar mi asistencia 🎉</button>
+
+      <!-- Solo visible en modo edición: baja o regreso a la lista. -->
+      <div class="asistencia-box hidden" id="asistencia-box">
+        <button type="button" class="btn-baja hidden" id="btn-baja">No podré asistir 😔</button>
+
+        <div class="baja-confirm hidden" id="baja-confirm">
+          <p>Sacaremos tu ficha de la lista de participantes. Puedes volver a confirmar cuando quieras con tu DNI/CE.</p>
+          <div class="baja-actions">
+            <button type="button" class="btn-baja-si" id="btn-baja-si">Sí, no podré ir</button>
+            <button type="button" class="btn-link" id="btn-baja-no">Mejor no</button>
+          </div>
+        </div>
+
+        <div class="baja-aviso hidden" id="baja-aviso">
+          🚪 Tu ficha está marcada como <b>no asistiré</b>, así que no aparece entre los participantes.
+        </div>
+        <button type="button" class="btn-volver hidden" id="btn-volver">Sí podré ir, cuéntenme de nuevo 🎉</button>
+      </div>
     </form>
 
     <div class="rsvp-success hidden" id="rsvp-success">
-      <div class="emoji">✅</div>
-      <h3>¡Listo, <span id="successName"></span>!</h3>
-      <p id="successText">Tu ficha quedó anotada. Nos vemos el 10 de octubre para jugar.</p>
+      <div class="emoji" id="successEmoji">✅</div>
+      <h3 id="successTitle"></h3>
+      <p id="successText"></p>
     </div>
   </div>
 </section>
@@ -194,6 +215,9 @@
     <p class="section-sub">Estos son los valientes que ya confirmaron su lugar.</p>
 
     <div class="participants-grid" id="participants-grid"></div>
+
+    <!-- Solo el número: quién se dio de baja no se muestra. -->
+    <p class="bajas-nota hidden" id="bajas-nota"></p>
   </div>
 </section>
 
