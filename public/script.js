@@ -536,7 +536,10 @@ function renderMesa({ juego, jugadores }, i) {
   const nombre = escapeHtml(juego.nombre);
   const ficha = `https://ludoteca.rafotijero.dev/#/juego/${encodeURIComponent(juego.slug)}`;
   const nombres = jugadores
-    .map((p) => `<li>${escapeHtml(p.alias || p.nombre)}</li>`)
+    .map((p) => {
+      const como = escapeHtml(p.alias || p.nombre);
+      return `<li title="${como}">${como}</li>`;
+    })
     .join('');
 
   return `<article class="mesa">
@@ -546,17 +549,11 @@ function renderMesa({ juego, jugadores }, i) {
       <div class="mesa-datos">
         <p class="mesa-num">Mesa ${i + 1}</p>
         <h3 class="mesa-juego">${nombre}</h3>
-        <p class="mesa-meta">${rango(juego.jugadores)} jugadores · ${rango(juego.duracion)} min</p>
         <ul class="mesa-jugadores">${nombres}</ul>
       </div>
     </article>`;
 }
 
-/** [2, 4] → "2–4"; [30, 30] → "30". */
-function rango([desde, hasta] = []) {
-  if (!Number.isFinite(desde)) return '?';
-  return desde === hasta ? `${desde}` : `${desde}–${hasta}`;
-}
 function alAzar(opciones) {
   return opciones[Math.floor(Math.random() * opciones.length)];
 }

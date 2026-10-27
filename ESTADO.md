@@ -72,7 +72,8 @@ El catálogo es un proyecto aparte (`ludoteca.rafotijero.dev`) y su `data/juegos
 manda cabeceras CORS, así que el navegador no puede pedirlo directo desde esta página.
 `GET /api/ludoteca` lo trae desde el Worker y devuelve solo lo que necesita la vitrina:
 la cuenta, los números (jugadores, duración mínima, categorías) y la lista de
-`{ slug, nombre, imagen, jugadores, duracion }` con las URL de imagen ya absolutas.
+`{ slug, nombre, imagen, jugadores }` con las URL de imagen ya absolutas. El rango de
+jugadores no se muestra en ningún lado: lo usa el sorteo para elegir juego.
 Se cachea una hora en Cloudflare y otra en el navegador.
 
 > Ojo al probar: ese caché de una hora es del **navegador**. Si cambias lo que devuelve

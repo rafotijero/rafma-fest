@@ -42,7 +42,6 @@ export async function ludoteca() {
             nombre: j.nombre,
             imagen: `${LUDOTECA}/${j.imagen}`,
             jugadores: j.jugadores,
-            duracion: j.duracion,
           })),
       },
       200,
