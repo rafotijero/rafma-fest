@@ -41,6 +41,8 @@ export async function ludoteca() {
             slug: j.slug,
             nombre: j.nombre,
             imagen: `${LUDOTECA}/${j.imagen}`,
+            jugadores: j.jugadores,
+            duracion: j.duracion,
           })),
       },
       200,

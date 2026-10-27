@@ -43,6 +43,7 @@
     <li><a href="#confirmar">Asistencia</a></li>
     <li><a href="#participantes">Participantes</a></li>
     <li><a href="#ludoteca">Ludoteca</a></li>
+    <li><a href="#mesas">A jugar</a></li>
   </ul>
 </nav>
 
@@ -245,6 +246,22 @@
 
       <p class="ludoteca-nota">¿No se deciden? El botón <b>«¿A qué jugamos hoy?»</b> de la ludoteca elige por ustedes.</p>
     </div>
+  </div>
+</section>
+
+<!-- ================= MESAS ================= -->
+<section id="mesas">
+  <div class="section-inner">
+    <div class="section-icon">🎲</div>
+    <h2 class="section-title">¡A <span>jugar</span>!</h2>
+    <p class="section-sub">Cinco juegos al azar y quién se sienta en cada mesa. Si no les convence lo que salió, vuelvan a sortear.</p>
+
+    <button class="btn-sorteo" id="btn-sorteo" type="button">🎲 ¡A jugar!</button>
+
+    <!-- Aviso para los casos raros: nadie confirmado todavía, o menos de cinco. -->
+    <p class="sorteo-aviso hidden" id="sorteo-aviso"></p>
+
+    <div class="mesas-grid" id="mesas-grid"></div>
   </div>
 </section>
 

@@ -35,7 +35,7 @@ cualquier ruta que no corresponda a un archivo (como `/api/registro`) cae al Wor
 
 ## Secciones de la página
 
-En este orden: **Invitación → Asistencia → Participantes → Ludoteca.**
+En este orden: **Invitación → Asistencia → Participantes → Ludoteca → A jugar.**
 
 - **Invitación** — hero con logo, fecha, ubicación (link a Google Maps) y frase de invitación.
   El "Descubre más" del final es un enlace a `#confirmar`.
@@ -51,7 +51,10 @@ En este orden: **Invitación → Asistencia → Participantes → Ludoteca.**
 - **Ludoteca** — vitrina del catálogo que vive en https://ludoteca.rafotijero.dev/, con la
   cuenta de juegos, tres pastillas de datos, ocho portadas al azar (cada una enlaza a su
   ficha) y un botón a la ludoteca. Los datos llegan de `GET /api/ludoteca`; si esa llamada
-  falla, la tarjeta se queda con el texto y el botón que ya trae el HTML. Va al final.
+  falla, la tarjeta se queda con el texto y el botón que ya trae el HTML.
+- **A jugar** — un botón que sortea cinco mesas: a cada una le toca un juego de la
+  ludoteca y un grupo de los confirmados. Se puede volver a sortear las veces que sea.
+  Todo pasa en el navegador con las dos listas ya cargadas, sin pedir nada de nuevo.
 
 ### Editar un registro
 
@@ -69,12 +72,31 @@ El catálogo es un proyecto aparte (`ludoteca.rafotijero.dev`) y su `data/juegos
 manda cabeceras CORS, así que el navegador no puede pedirlo directo desde esta página.
 `GET /api/ludoteca` lo trae desde el Worker y devuelve solo lo que necesita la vitrina:
 la cuenta, los números (jugadores, duración mínima, categorías) y la lista de
-`{ slug, nombre, imagen }` con las URL de imagen ya absolutas. Se cachea una hora en
-Cloudflare y otra en el navegador.
+`{ slug, nombre, imagen, jugadores, duracion }` con las URL de imagen ya absolutas.
+Se cachea una hora en Cloudflare y otra en el navegador.
+
+> Ojo al probar: ese caché de una hora es del **navegador**. Si cambias lo que devuelve
+> el endpoint, la página sigue viendo la respuesta vieja hasta que recargues sin caché.
 
 Las fichas individuales cuelgan de `#/juego/<slug>` en ese mismo dominio. El dominio se
 escribe en un solo sitio, `src/ludoteca.js`: el front arma los enlaces con la `url` que
 viene en la respuesta.
+
+### Cómo reparte el sorteo
+
+Está todo en `sortearMesas()`. Tres reglas que no se ven en la pantalla:
+
+- **Mesas de dos para arriba.** Son `min(5, floor(confirmados / 2))` mesas, con una
+  mínima: con 9 confirmados salen 4 mesas, no 5 con alguien jugando solo.
+- **Primero el tamaño, después el juego.** Se reparte a la gente lo más parejo posible
+  (21 en 5 mesas → 5, 4, 4, 4, 4) y recién entonces cada mesa sortea su juego entre los
+  que admiten ese número exacto de jugadores. Si no queda ninguno que cuadre, se usa
+  cualquiera y el aviso lo dice.
+- **Sin repetir juego** dentro de la misma tirada.
+
+La gente sale de `GET /api/participantes` y los juegos de `GET /api/ludoteca`, ambas ya
+cargadas al abrir la página y guardadas en `confirmados` y `catalogo`. El nombre que se
+muestra es el alias, o el nombre de pila si la persona eligió usarlo.
 
 ### Darse de baja (y volver)
 
@@ -146,4 +168,6 @@ y centrarlo en un lienzo de 1200x630 con el color `--cream` (#fdf7ec).
 
 ## Pendiente: funcionalidades futuras
 
-- **Sorteo de mesas** — lógica para repartir asistentes en mesas de 5, registrar ganador por mesa y avance a la final. Nueva sección o vista para mostrar mesas y bracket.
+- **Torneo** — el reparto en mesas ya está (sección "A jugar"), falta lo de competencia:
+  registrar el ganador de cada mesa y armar el avance a la final con su bracket. El
+  sorteo actual no guarda nada: cada tirada vive solo en la pantalla de quien la hizo.

@@ -545,6 +545,84 @@
     color:var(--teal);
   }
 
+  /* ---------- MESAS: el sorteo ---------- */
+  #mesas .section-inner{ max-width:720px; }
+  .btn-sorteo{
+    margin-top:28px;
+    background:var(--teal);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:17px;
+    border:none;
+    border-radius:16px;
+    padding:15px 34px;
+    cursor:pointer;
+    box-shadow:0 10px 20px rgba(47,143,136,0.3);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn-sorteo:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 26px rgba(47,143,136,0.36);
+  }
+  .btn-sorteo:active{ transform:translateY(0); }
+  .sorteo-aviso{
+    margin-top:16px;
+    font-size:13.5px; color:var(--ink); opacity:0.8;
+  }
+
+  .mesas-grid{
+    display:flex; flex-direction:column; gap:14px;
+    margin-top:26px;
+    text-align:left;
+  }
+  .mesa{
+    display:flex; align-items:center; gap:16px;
+    background:#fff;
+    border-radius:20px;
+    padding:16px 20px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+  }
+  .mesa-cover{
+    flex:0 0 76px;
+    width:76px; height:76px;
+    display:block;
+    background:#fff;
+    border:1.5px solid var(--teal-pale);
+    border-radius:14px;
+    overflow:hidden;
+    padding:4px;
+    transition:transform .18s;
+  }
+  .mesa-cover:hover{ transform:rotate(-2deg) scale(1.04); }
+  .mesa-cover img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .mesa-datos{ flex:1; min-width:0; }
+  .mesa-num{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:11.5px;
+    letter-spacing:1px; text-transform:uppercase;
+    color:var(--coral);
+  }
+  .mesa-juego{
+    font-weight:800; font-size:18px; color:var(--ink-dark);
+    line-height:1.2;
+  }
+  .mesa-meta{
+    margin-top:2px;
+    font-size:12.5px; font-weight:700; color:var(--teal);
+  }
+  .mesa-jugadores{
+    list-style:none;
+    display:flex; flex-wrap:wrap; gap:6px;
+    margin-top:10px;
+  }
+  .mesa-jugadores li{
+    background:var(--cream-2);
+    color:var(--ink-dark);
+    font-weight:700; font-size:12.5px;
+    padding:5px 12px;
+    border-radius:20px;
+  }
+
   footer{
     text-align:center; padding:34px 20px 40px;
     font-size:13.5px; color:var(--ink); opacity:0.7;
@@ -565,6 +643,8 @@
     .ludoteca-covers{ grid-template-columns:repeat(3, 1fr); }
     /* A tres por fila, ocho portadas dejan una fila coja: se muestran seis. */
     .ludoteca-cover:nth-child(n+7){ display:none; }
+    .mesa{ flex-direction:column; align-items:flex-start; gap:12px; }
+    .mesa-cover{ flex-basis:auto; }
     .hero{ padding-top:48px; }
     .info-row{ gap:10px; }
     .info-card{ font-size:13.5px; padding:10px 14px; }
