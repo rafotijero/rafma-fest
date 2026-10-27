@@ -35,12 +35,17 @@ cualquier ruta que no corresponda a un archivo (como `/api/registro`) cae al Wor
 
 ## Secciones de la página
 
-En este orden: **Invitación → Asistencia → Participantes → Ludoteca → A jugar.**
+En este orden: **Invitación → Programa → Asistencia → Participantes → Ludoteca → A jugar.**
 
 - **Invitación** — hero con logo, fecha, ubicación (link a Google Maps) y frase de invitación.
-  El "Descubre más" del final es un enlace a `#confirmar`.
+  El "Descubre más" del final es un enlace a `#programa`, que es la sección que sigue.
   Bajo la fecha hay una píldora de aviso (`.date-change`) porque el fest se reprogramó del
   10 al 31 de octubre; **quitarla cuando ya todos estén al tanto.**
+- **Programa** — el cronograma de la noche, en HTML fijo: llegada 6:00 p.m., "Una RAFMA
+  historia" 9:00 p.m. (con premios del primer al tercer lugar), Torneo de Mesas 10:00 p.m.
+  y Happy Birthday a medianoche. Cada hito es una ficha con su hora al costado y un color
+  propio. El de las 10 enlaza a la sección "A jugar", que es de donde salen esas mesas.
+  Si cambian los horarios se editan a mano en `public/index.html`; no vienen de la base.
 - **Asistencia** — formulario de registro:
   - Nombre, Apellidos, DNI/CE (8 a 10 dígitos)
   - Alias de jugador (opcional) + checkbox para usar el nombre en su lugar
