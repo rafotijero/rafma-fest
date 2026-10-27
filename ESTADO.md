@@ -169,6 +169,13 @@ y centrarlo en un lienzo de 1200x630 con el color `--cream` (#fdf7ec).
 
 ## Pendiente: funcionalidades futuras
 
+- **Sorteo compartido** — hoy el sorteo de "A jugar" pasa entero en el navegador y no se
+  guarda en ningún lado: cada quien que aprieta el botón ve un reparto distinto, y el
+  que armó Rafo en su celular no es el que ve nadie más. Para el sábado 31 conviene que
+  haya una sola tirada válida: una tabla en D1 con el sorteo vigente (fecha, y por mesa
+  el juego y los DNI que le tocaron), un `POST /api/sorteo` que lo arme y lo guarde, y un
+  `GET /api/sorteo` que devuelva el último. Decidir también quién puede sortear, porque
+  si el botón queda abierto cualquiera rehace las mesas en medio de la noche.
 - **Torneo** — el reparto en mesas ya está (sección "A jugar"), falta lo de competencia:
-  registrar el ganador de cada mesa y armar el avance a la final con su bracket. El
-  sorteo actual no guarda nada: cada tirada vive solo en la pantalla de quien la hizo.
+  registrar el ganador de cada mesa y armar el avance a la final con su bracket. Depende
+  del sorteo compartido: sin una tirada guardada no hay mesas a las que ponerles ganador.
