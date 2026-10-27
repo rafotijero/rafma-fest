@@ -17,6 +17,7 @@ src/
   consulta.js           → POST /api/consulta — busca un registro por DNI
   asistencia.js         → POST /api/asistencia — baja / regreso a la lista
   participantes.js      → GET /api/participantes — lista de confirmados + nº de bajas
+  ludoteca.js           → GET /api/ludoteca — resumen del catálogo de ludoteca.rafotijero.dev
   validacion.js         → catálogo de frases y validación compartida
   http.js               → helper json() para las respuestas
 wrangler.toml           → config del Worker: assets desde public/ + binding D1
@@ -47,7 +48,10 @@ En este orden: **Invitación → Asistencia → Participantes → Ludoteca.**
   - Frase que te define (selector con 8 opciones + "Otro" para escribir la propia)
   - Al enviar, hace `fetch POST /api/registro` y muestra confirmación o error inline.
 - **Participantes** — tarjetas cargadas dinámicamente desde `GET /api/participantes`. El grid está vacío en el HTML; se llena con JS al cargar la página. Debajo, una nota anónima con cuántos avisaron que ya no vienen (no aparece si no hay ninguno).
-- **Ludoteca** — placeholder "Próximamente", pendiente de catálogo de juegos. Va al final.
+- **Ludoteca** — vitrina del catálogo que vive en https://ludoteca.rafotijero.dev/, con la
+  cuenta de juegos, tres pastillas de datos, ocho portadas al azar (cada una enlaza a su
+  ficha) y un botón a la ludoteca. Los datos llegan de `GET /api/ludoteca`; si esa llamada
+  falla, la tarjeta se queda con el texto y el botón que ya trae el HTML. Va al final.
 
 ### Editar un registro
 
@@ -58,6 +62,19 @@ Cualquiera puede editar su ficha escribiendo el DNI con el que se registró:
 La frase se guarda como texto, no como clave, así que al rellenar el formulario se busca
 la opción del `<select>` cuyo texto coincide; si no coincide ninguna, es una frase
 personalizada y se selecciona "Otro".
+
+### La ludoteca es otro sitio
+
+El catálogo es un proyecto aparte (`ludoteca.rafotijero.dev`) y su `data/juegos.json` no
+manda cabeceras CORS, así que el navegador no puede pedirlo directo desde esta página.
+`GET /api/ludoteca` lo trae desde el Worker y devuelve solo lo que necesita la vitrina:
+la cuenta, los números (jugadores, duración mínima, categorías) y la lista de
+`{ slug, nombre, imagen }` con las URL de imagen ya absolutas. Se cachea una hora en
+Cloudflare y otra en el navegador.
+
+Las fichas individuales cuelgan de `#/juego/<slug>` en ese mismo dominio. El dominio se
+escribe en un solo sitio, `src/ludoteca.js`: el front arma los enlaces con la `url` que
+viene en la respuesta.
 
 ### Darse de baja (y volver)
 
@@ -129,5 +146,4 @@ y centrarlo en un lienzo de 1200x630 con el color `--cream` (#fdf7ec).
 
 ## Pendiente: funcionalidades futuras
 
-- **Ludoteca** — catálogo real de juegos (actualmente es un placeholder).
 - **Sorteo de mesas** — lógica para repartir asistentes en mesas de 5, registrar ganador por mesa y avance a la final. Nueva sección o vista para mostrar mesas y bracket.

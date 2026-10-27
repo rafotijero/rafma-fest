@@ -214,22 +214,84 @@
     max-width:460px;
     margin-left:auto; margin-right:auto;
   }
-  .soon-card{
+  /* La ludoteca vive en ludoteca.rafotijero.dev: esta tarjeta es su vitrina. */
+  .ludoteca-card{
     margin:34px auto 0;
-    max-width:360px;
+    max-width:520px;
     background:#fff;
-    border:2.5px dashed var(--teal-soft);
     border-radius:24px;
-    padding:34px 24px;
+    padding:30px 26px 26px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.06);
   }
-  .soon-card .emoji{ font-size:40px; }
-  .soon-card h3{
-    font-weight:800; font-size:22px; color:var(--pink);
-    margin-top:10px; letter-spacing:0.5px;
+  .ludoteca-count{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:21px; color:var(--pink);
+    letter-spacing:0.3px;
   }
-  .soon-card p{
-    margin-top:8px; font-size:14.5px; color:var(--ink); opacity:0.85;
+
+  /* Portadas de muestra, cada una enlaza a su ficha en la ludoteca. */
+  .ludoteca-covers{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+    margin-top:18px;
   }
+  .ludoteca-covers:empty{ display:none; }
+  .ludoteca-cover{
+    display:block;
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+    border:1.5px solid var(--teal-pale);
+    aspect-ratio:1;
+    padding:5px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.08);
+    transition:transform .18s, box-shadow .18s;
+  }
+  .ludoteca-cover:hover{
+    transform:translateY(-3px) rotate(-1.5deg);
+    box-shadow:0 10px 20px rgba(0,0,0,0.14);
+  }
+  .ludoteca-cover img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+  }
+
+  .ludoteca-facts{
+    list-style:none;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
+    margin-top:20px;
+  }
+  .ludoteca-facts li{
+    background:var(--teal-pale);
+    color:var(--teal);
+    font-weight:700; font-size:12.5px;
+    padding:6px 13px;
+    border-radius:20px;
+  }
+
+  .btn-ludoteca{
+    display:inline-block;
+    margin-top:22px;
+    background:var(--pink);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:16px;
+    text-decoration:none;
+    border-radius:16px;
+    padding:14px 28px;
+    box-shadow:0 10px 20px rgba(224,51,95,0.28);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn-ludoteca:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 26px rgba(224,51,95,0.34);
+  }
+  .ludoteca-nota{
+    margin-top:14px; font-size:13.5px; color:var(--ink); opacity:0.8;
+  }
+  .ludoteca-nota b{ color:var(--teal); }
   .hidden{ display:none !important; }
 
   .rsvp-form{
@@ -499,6 +561,10 @@
 
   @media (max-width:560px){
     section{ padding:48px 16px 48px; }
+    .ludoteca-card{ padding:26px 18px 22px; }
+    .ludoteca-covers{ grid-template-columns:repeat(3, 1fr); }
+    /* A tres por fila, ocho portadas dejan una fila coja: se muestran seis. */
+    .ludoteca-cover:nth-child(n+7){ display:none; }
     .hero{ padding-top:48px; }
     .info-row{ gap:10px; }
     .info-card{ font-size:13.5px; padding:10px 14px; }

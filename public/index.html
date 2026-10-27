@@ -226,11 +226,24 @@
   <div class="section-inner">
     <div class="section-icon">🧩</div>
     <h2 class="section-title">Ludo<span>teca</span></h2>
-    <p class="section-sub">Aquí iremos publicando el catálogo completo de los juegos que tenemos en casa, para que elijas con cuál quieres jugar ese día.</p>
-    <div class="soon-card">
-      <div class="emoji">🎲</div>
-      <h3>¡Próximamente!</h3>
-      <p>Estamos armando la lista completa de juegos. Vuelve pronto para verla.</p>
+    <p class="section-sub">Ya está en línea el catálogo completo de los juegos que tenemos en casa: reglas, duración y cuántos pueden jugar. Ven con tu favorito ya elegido.</p>
+
+    <div class="ludoteca-card">
+      <!-- La cuenta y las portadas las rellena cargarLudoteca() desde /api/ludoteca.
+           Si el catálogo no responde, se queda este texto y el botón, que es lo que importa. -->
+      <p class="ludoteca-count" id="ludoteca-count">Nuestra colección, juego por juego.</p>
+
+      <div class="ludoteca-covers" id="ludoteca-covers"></div>
+
+      <ul class="ludoteca-facts" id="ludoteca-facts">
+        <li>🔎 Busca por nombre</li>
+        <li>👥 Filtra por cuántos son</li>
+        <li>⏱️ Filtra por el tiempo que tienen</li>
+      </ul>
+
+      <a class="btn-ludoteca" href="https://ludoteca.rafotijero.dev/" target="_blank" rel="noopener">Explorar la ludoteca →</a>
+
+      <p class="ludoteca-nota">¿No se deciden? El botón <b>«¿A qué jugamos hoy?»</b> de la ludoteca elige por ustedes.</p>
     </div>
   </div>
 </section>

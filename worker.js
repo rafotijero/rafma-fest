@@ -2,6 +2,7 @@ import { registro, actualizar } from './src/registro.js';
 import { participantes } from './src/participantes.js';
 import { consulta } from './src/consulta.js';
 import { asistencia } from './src/asistencia.js';
+import { ludoteca } from './src/ludoteca.js';
 import { json } from './src/http.js';
 
 export default {
@@ -28,6 +29,11 @@ export default {
     if (pathname === '/api/participantes') {
       if (metodo !== 'GET') return json({ error: 'Método no permitido.' }, 405);
       return participantes(env);
+    }
+
+    if (pathname === '/api/ludoteca') {
+      if (metodo !== 'GET') return json({ error: 'Método no permitido.' }, 405);
+      return ludoteca();
     }
 
     return json({ error: 'Ruta no encontrada.' }, 404);

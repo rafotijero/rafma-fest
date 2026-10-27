@@ -11,6 +11,7 @@ const DESPEDIDAS = [
 
 document.addEventListener('DOMContentLoaded', () => {
   cargarParticipantes();
+  cargarLudoteca();
 
   const form = document.getElementById('rsvp-form');
   if (!form) return;
@@ -361,6 +362,78 @@ function mostrarBajas(bajas) {
   nota.textContent = bajas === 1
     ? '💌 1 persona avisó que ya no podrá venir.'
     : `💌 ${bajas} personas avisaron que ya no podrán venir.`;
+}
+
+/**
+ * La vitrina de la ludoteca: cuántos juegos hay y unas cuantas portadas.
+ *
+ * El catálogo vive en ludoteca.rafotijero.dev y ese dominio no manda cabeceras
+ * CORS, así que los datos llegan por /api/ludoteca, que los trae desde el Worker.
+ * Si algo falla no pasa nada: la tarjeta ya trae su texto y su botón en el HTML.
+ */
+async function cargarLudoteca() {
+  const covers = document.getElementById('ludoteca-covers');
+  if (!covers) return;
+
+  try {
+    const res = await fetch('/api/ludoteca');
+    if (!res.ok) return;
+    const datos = await res.json();
+    const juegos = datos.juegos ?? [];
+    if (juegos.length === 0) return;
+
+    const cuenta = document.getElementById('ludoteca-count');
+    if (cuenta) {
+      cuenta.textContent = datos.total === 1
+        ? '1 juego esperando en la mesa'
+        : `${datos.total} juegos esperando en la mesa`;
+    }
+
+    mostrarDatosLudoteca(datos);
+
+    // Ocho portadas al azar en cada visita, para que la vitrina no sea siempre la misma.
+    covers.innerHTML = mezclar(juegos)
+      .slice(0, 8)
+      .map((j) => renderPortada(j, datos.url))
+      .join('');
+  } catch {
+    // Falla silenciosa: queda la tarjeta con su botón a la ludoteca
+  }
+}
+
+/**
+ * Las tres pastillas de datos, con los números reales del catálogo. Si alguno no
+ * vino, se queda el texto que ya trae el HTML describiendo los filtros.
+ */
+function mostrarDatosLudoteca({ jugadoresMin, jugadoresMax, duracionMin, categorias }) {
+  const facts = document.getElementById('ludoteca-facts');
+  if (!facts) return;
+  if (![jugadoresMin, jugadoresMax, duracionMin, categorias].every(Number.isFinite)) return;
+
+  facts.innerHTML = [
+    `👥 De ${jugadoresMin} a ${jugadoresMax} jugadores`,
+    `⏱️ Desde ${duracionMin} minutos`,
+    `🏷️ ${categorias} categorías`,
+  ].map((texto) => `<li>${texto}</li>`).join('');
+}
+
+function renderPortada(j, base) {
+  const nombre = escapeHtml(j.nombre);
+  const ficha = `${escapeHtml(base)}#/juego/${encodeURIComponent(j.slug)}`;
+  return `<a class="ludoteca-cover" href="${ficha}"
+      target="_blank" rel="noopener" title="${nombre}">
+      <img src="${escapeHtml(j.imagen)}" alt="${nombre}" loading="lazy">
+    </a>`;
+}
+
+/** Copia barajada, sin tocar el arreglo original. */
+function mezclar(lista) {
+  const copia = [...lista];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
 }
 
 function alAzar(opciones) {
