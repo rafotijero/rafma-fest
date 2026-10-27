@@ -42,8 +42,8 @@ En este orden: **Invitación → Programa → Asistencia → Participantes → L
   Bajo la fecha hay una píldora de aviso (`.date-change`) porque el fest se reprogramó del
   10 al 31 de octubre; **quitarla cuando ya todos estén al tanto.**
 - **Programa** — el cronograma de la noche, en HTML fijo. Siete hitos: llegada (6:00),
-  piqueos y tragos (7:30), "Una RAFMA historia" (9:00, con premios del primer al tercer
-  lugar), Torneo de Mesas (10:00), final y premiaciones (11:00), Happy Birthday (medianoche)
+  piqueos y tragos (7:30), "Una RAFMA historia" (9:00, una fábula con premio a las tres
+  personas más atentas), Torneo de Mesas (10:00), final y premiaciones (11:00), Happy Birthday (medianoche)
   y mesa libre (12:30 a.m.). Cada hito es una ficha con su hora al costado; el color sale de
   un ciclo de cuatro que se repite solo, salvo el cumpleaños, que lleva `.hito-cumple` y va
   siempre en rosado. El de las 10 enlaza a la sección "A jugar", de donde salen esas mesas.
