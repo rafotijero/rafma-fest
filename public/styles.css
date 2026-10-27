@@ -575,10 +575,13 @@
     padding:16px 20px;
     box-shadow:0 8px 20px rgba(0,0,0,0.05);
   }
-  /* Cada hito con su color, para que la noche se lea de un vistazo. */
-  .hito:nth-child(2) .hito-card{ border-left-color:var(--gold); }
-  .hito:nth-child(3) .hito-card{ border-left-color:var(--periwinkle); }
-  .hito:nth-child(4) .hito-card{ border-left-color:var(--coral); }
+  /* Cada hito con su color, para que la noche se lea de un vistazo. El ciclo es
+     de cuatro y se repite solo, así que agregar hitos no deja ninguno sin color. */
+  .hito:nth-child(4n+2) .hito-card{ border-left-color:var(--gold); }
+  .hito:nth-child(4n+3) .hito-card{ border-left-color:var(--periwinkle); }
+  .hito:nth-child(4n+4) .hito-card{ border-left-color:var(--coral); }
+  /* El cumpleaños es el motivo de todo: ese se sale del ciclo. */
+  .hito.hito-cumple .hito-card{ border-left-color:var(--pink); }
   .hito-emoji{ font-size:26px; line-height:1; }
   .hito-card h3{
     font-weight:800; font-size:17px; color:var(--ink-dark); line-height:1.2;
