@@ -126,17 +126,6 @@
     font-size:14px; letter-spacing:2px;
   }
 
-  .date-change{
-    display:inline-block;
-    margin-top:16px;
-    background:var(--coral-pale);
-    border:1px solid var(--coral);
-    border-radius:999px;
-    padding:8px 18px;
-    font-size:14px; font-weight:600; line-height:1.4;
-    color:var(--ink-dark);
-  }
-  .date-change b{ color:var(--pink); }
 
   .info-row{
     display:flex; flex-wrap:wrap; gap:14px; justify-content:center;

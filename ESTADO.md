@@ -39,8 +39,6 @@ En este orden: **Invitación → Programa → Asistencia → Participantes → L
 
 - **Invitación** — hero con logo, fecha, ubicación (link a Google Maps) y frase de invitación.
   El "Descubre más" del final es un enlace a `#programa`, que es la sección que sigue.
-  Bajo la fecha hay una píldora de aviso (`.date-change`) porque el fest se reprogramó del
-  10 al 31 de octubre; **quitarla cuando ya todos estén al tanto.**
 - **Programa** — el cronograma de la noche, en HTML fijo. Siete hitos: llegada (6:00),
   piqueos y tragos (7:30), "Una RAFMA historia" (8:30, una fábula con premio a las tres
   personas más atentas), Torneo de Mesas (10:00), final y premiaciones (11:00), Happy Birthday (medianoche)
