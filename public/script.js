@@ -357,24 +357,9 @@ async function cargarParticipantes() {
     } else {
       grid.innerHTML = lista.map(renderCard).join('');
     }
-
-    mostrarBajas(datos.bajas ?? 0);
   } catch {
     // Falla silenciosa: la sección queda vacía si no hay conexión
   }
-}
-
-/** Cuántos avisaron que ya no vienen. Sin nombres: la nota es anónima a propósito. */
-function mostrarBajas(bajas) {
-  const nota = document.getElementById('bajas-nota');
-  if (!nota) return;
-
-  nota.classList.toggle('hidden', bajas === 0);
-  if (bajas === 0) return;
-
-  nota.textContent = bajas === 1
-    ? '💌 1 persona avisó que ya no podrá venir.'
-    : `💌 ${bajas} personas avisaron que ya no podrán venir.`;
 }
 
 /**

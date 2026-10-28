@@ -16,7 +16,7 @@ src/
   registro.js           → POST /api/registro (alta) y PUT /api/registro (edición)
   consulta.js           → POST /api/consulta — busca un registro por DNI
   asistencia.js         → POST /api/asistencia — baja / regreso a la lista
-  participantes.js      → GET /api/participantes — lista de confirmados + nº de bajas
+  participantes.js      → GET /api/participantes — lista de confirmados
   ludoteca.js           → GET /api/ludoteca — resumen del catálogo de ludoteca.rafotijero.dev
   validacion.js         → catálogo de frases y validación compartida
   http.js               → helper json() para las respuestas
@@ -118,10 +118,9 @@ dio de baja puede volver sin reescribir su ficha (le sale el botón "Sí podré 
 de nuevo"), sabemos quién avisó en vez de verlo desaparecer, y no se pierde nada si alguien
 aprieta el botón por error.
 
-`GET /api/participantes` devuelve `{ lista, bajas }`: `lista` son los que vienen
-(`asistira = 1`) y `bajas` es **solo el número** de los que no. La página muestra "3
-personas avisaron que ya no podrán venir" sin nombres — quien no puede venir no queda
-expuesto en una lista pública. Los nombres nunca salen del servidor por esta ruta.
+`GET /api/participantes` devuelve `{ lista }`, y solo con los que vienen
+(`asistira = 1`). De los dados de baja no sale nada: ni los nombres, para no exponer a
+nadie en una lista pública, ni la cuenta, porque la página ya no la muestra.
 
 Editar los datos (`PUT /api/registro`) no toca `asistira`: son cosas distintas a propósito,
 guardar cambios no te vuelve a inscribir ni te da de baja.

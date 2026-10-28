@@ -459,13 +459,6 @@
     text-align:center;
   }
 
-  .bajas-nota{
-    margin-top:22px;
-    text-align:center;
-    font-size:14px; font-weight:600;
-    color:var(--ink); opacity:0.6;
-  }
-
   .participants-empty{
     text-align:center;
     color:var(--ink);
