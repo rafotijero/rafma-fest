@@ -25,6 +25,17 @@ const JUEGOS = [
 
 const JUEGO_FINAL = { slug: 'mal-trago', nombre: 'Mal Trago' };
 
+// Gente que no debe caer en la misma mesa, por nombre y apellidos. Miguel y
+// Valeria probablemente se vayan a media fiesta: juntos dejarían una mesa coja,
+// y separados cada mesa aguanta la baja.
+const SEPARADOS = [['Miguel Arismendi', 'Valeria Canaval']];
+
+// En la mesa se usa un solo nombre, y el primero no siempre es por el que a uno
+// lo llaman. La regla saca el primer nombre; acá van los que no cuadran con ella.
+const COMO_LE_DICEN = {
+  'Cyndi Darly Tejada Manyari': 'Darly',
+};
+
 const SIN_CACHE = { 'Cache-Control': 'no-store' };
 
 /** La portada sale del slug: la ludoteca las guarda todas con el mismo patrón. */
@@ -32,9 +43,20 @@ function conPortada({ slug, nombre }) {
   return { slug, nombre, imagen: `${PORTADAS}/${slug}.webp` };
 }
 
-/** Cómo se llama cada quien en la mesa: su alias, o su nombre si no puso uno. */
+function quienEs(p) {
+  return `${p.nombre} ${p.apellidos}`;
+}
+
+/**
+ * Cómo se llama cada quien en la mesa. En las pastillas no entra un nombre largo,
+ * así que del alias se corta lo que venga entre paréntesis —hay quien se explicó
+ * ahí— y de un nombre sin alias se usa solo el primero.
+ */
 function comoSeLlama(p) {
-  return p.alias || p.nombre;
+  const aMano = COMO_LE_DICEN[quienEs(p)];
+  if (aMano) return aMano;
+  if (p.alias) return p.alias.split('(')[0].trim();
+  return p.nombre.trim().split(/\s+/)[0];
 }
 
 function mezclar(lista) {
@@ -81,6 +103,29 @@ function acomodar(tamanos, topes) {
   return tamanos;
 }
 
+/** ¿Algún par de los que no deben jugar juntos quedó en la misma mesa? */
+function hayJuntos(grupos) {
+  return SEPARADOS.some(([uno, otro]) =>
+    grupos.some((g) => g.some((p) => quienEs(p) === uno) && g.some((p) => quienEs(p) === otro))
+  );
+}
+
+/**
+ * Reparte a la gente en grupos del tamaño pedido. Si a dos que no deben jugar
+ * juntos les tocó la misma mesa, se vuelve a mezclar entero: con cuatro mesas eso
+ * se resuelve en un par de intentos. Si después de cincuenta no cuadra —cuando hay
+ * una sola mesa, por ejemplo, y no hay forma— se deja la última y la fiesta sigue.
+ */
+function repartirGente(jugadores, tamanos) {
+  let grupos = [];
+  for (let intento = 0; intento < 50; intento++) {
+    const gente = mezclar(jugadores);
+    grupos = tamanos.map((tam) => gente.splice(0, tam));
+    if (!hayJuntos(grupos)) break;
+  }
+  return grupos;
+}
+
 /** Arma el reparto: quién se sienta en qué mesa y con qué juego. */
 function armar(jugadores, anfitriones) {
   const cuantas = Math.max(1, Math.min(JUEGOS.length, Math.floor(jugadores.length / 2)));
@@ -90,11 +135,11 @@ function armar(jugadores, anfitriones) {
     juegos.map((j) => j.max)
   );
 
-  const gente = mezclar(jugadores);
+  const grupos = repartirGente(jugadores, tamanos);
   const mesas = juegos.map((juego, i) => ({
     numero: i + 1,
     juego: conPortada(juego),
-    jugadores: gente.splice(0, tamanos[i]).map(comoSeLlama),
+    jugadores: grupos[i].map(comoSeLlama),
     apretada: tamanos[i] > juego.max,
   }));
 
@@ -102,7 +147,7 @@ function armar(jugadores, anfitriones) {
     mesas,
     final: {
       juego: conPortada(JUEGO_FINAL),
-      // Los anfitriones ya están dentro; los demás lugares los ganan en sus mesas.
+      // Los anfitriones ya están dentro; de cada mesa pasan el primero y el segundo.
       anfitriones: anfitriones.map(comoSeLlama),
       cupos: mesas.length,
     },
@@ -129,7 +174,7 @@ export async function sortear(request, env) {
 
   try {
     const { results } = await env.DB.prepare(
-      `SELECT nombre, alias, anfitrion
+      `SELECT nombre, apellidos, alias, anfitrion
          FROM participantes
         WHERE asistira = 1
         ORDER BY fecha_registro ASC`

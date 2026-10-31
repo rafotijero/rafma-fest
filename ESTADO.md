@@ -99,8 +99,17 @@ que todos ven lo mismo sin importar desde qué teléfono miren.
   Taco Gato Cabra Queso Pizza y Ouch!, y Mal Trago para la final. Están en `JUEGOS` y
   `JUEGO_FINAL`; la portada sale del slug, que la ludoteca guarda con el mismo patrón.
 - **Los anfitriones no juegan la primera ronda.** Los que tienen `anfitrion = 1` salen
-  del reparto y aparecen en la final, junto con un cupo vacío por mesa que se llena con
-  el ganador de cada una.
+  del reparto y aparecen en la final. De cada mesa pasan dos, el primero y el segundo,
+  así que la final es de 10: los 2 anfitriones y 8 que se la ganan. Justo el tope de
+  Mal Trago, que es de 4 a 10.
+- **Hay gente que no debe caer junta.** `SEPARADOS` lista los pares, por nombre y
+  apellidos. Si a un par le toca la misma mesa se vuelve a mezclar entero, hasta 50
+  veces. El caso real: Miguel y Valeria probablemente se vayan a media fiesta, y juntos
+  dejarían una mesa coja.
+- **En la mesa va un nombre solo.** Del alias se corta lo que venga entre paréntesis
+  —hay quien se explicó ahí— y de un nombre sin alias se usa el primero. Para los que
+  la regla no acierta está `COMO_LE_DICEN`, que hoy tiene un caso: a Cyndi Darly le
+  dicen Darly, no Cyndi. La sección de participantes no cambia: ahí va el nombre entero.
 - **Primero el tamaño, después el acomodo.** Se reparte a la gente lo más parejo posible
   y se le da la mesa más llena al juego que admite más. Ouch! es de cinco como mucho,
   así que si le cae una mesa más grande se le pasa gente a la que tenga sitio. Con 22

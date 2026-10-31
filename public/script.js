@@ -568,14 +568,15 @@ function renderMesa({ numero, juego, jugadores }) {
 }
 
 /**
- * La final no es una mesa más: los anfitriones ya están dentro y los demás
- * lugares siguen vacíos hasta que cada mesa tenga su ganador.
+ * La final no es una mesa más: los anfitriones ya están dentro y de cada mesa
+ * pasan dos, el primero y el segundo. Con cuatro mesas son diez en la final,
+ * que es justo lo que admite Mal Trago.
  */
 function renderFinal({ juego, anfitriones, cupos }) {
   const nombre = escapeHtml(juego.nombre);
   const libres = Array.from(
     { length: cupos },
-    (_, i) => `<li class="mesa-cupo">Ganador Mesa ${i + 1}</li>`
+    (_, i) => `<li class="mesa-cupo">1.º Mesa ${i + 1}</li><li class="mesa-cupo">2.º Mesa ${i + 1}</li>`
   ).join('');
 
   return `<article class="mesa mesa-final">
@@ -586,7 +587,7 @@ function renderFinal({ juego, anfitriones, cupos }) {
         <p class="mesa-num">🏆 La final</p>
         <h3 class="mesa-juego">${nombre}</h3>
         <ul class="mesa-jugadores">${anfitriones.map(pastilla).join('')}${libres}</ul>
-        <p class="mesa-nota">Los anfitriones entran de frente. Los demás lugares se ganan en las mesas.</p>
+        <p class="mesa-nota">Los anfitriones entran de frente. De cada mesa pasan los dos primeros.</p>
       </div>
     </article>`;
 }
