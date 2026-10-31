@@ -1,12 +1,12 @@
 const FECHA_EVENTO = '31 de octubre';
 
 /** Cuántas mesas arma el sorteo (menos, si no hay gente para tantas). */
-const MESAS = 5;
+// Cada cuánto se vuelve a preguntar por el sorteo vigente. Sortear desde un
+// celular tiene que llegarle a la pantalla proyectada sin que nadie recargue.
+const REFRESCO = 15000;
 
-// Las dos listas que necesita el sorteo, guardadas al cargarlas para no pedirlas
-// de nuevo en cada tirada: el catálogo de la ludoteca y quiénes vienen.
-let catalogo = [];
-let confirmados = [];
+// La tirada que ya está pintada, para no repintar lo mismo cada quince segundos.
+let sorteoId = null;
 
 // Despedidas para quien se da de baja: se elige una al azar, para que el
 // mensaje no suene a trámite. Cada una trae su propio emoji grande.
@@ -21,8 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarParticipantes();
   cargarLudoteca();
 
-  const btnSorteo = document.getElementById('btn-sorteo');
-  if (btnSorteo) btnSorteo.addEventListener('click', sortearMesas);
+  cargarSorteo();
+  prepararSorteo();
+  setInterval(cargarSorteo, REFRESCO);
 
   const form = document.getElementById('rsvp-form');
   if (!form) return;
@@ -350,8 +351,6 @@ async function cargarParticipantes() {
     const datos = await res.json();
     const lista = datos.lista ?? [];
 
-    confirmados = lista;
-
     if (lista.length === 0) {
       grid.innerHTML = '<p class="participants-empty">Aún no hay participantes confirmados. ¡Sé el primero!</p>';
     } else {
@@ -379,7 +378,6 @@ async function cargarLudoteca() {
     const datos = await res.json();
     const juegos = datos.juegos ?? [];
     if (juegos.length === 0) return;
-    catalogo = juegos;
 
     const cuenta = document.getElementById('ludoteca-count');
     if (cuenta) {
@@ -436,60 +434,104 @@ function mezclar(lista) {
 }
 
 /**
- * Reparte a los confirmados en cinco mesas, cada una con un juego al azar.
+ * El sorteo de mesas, que ahora se arma en el servidor.
  *
- * Tres detalles que no son obvios:
- * - Las mesas son de dos personas para arriba, así que con poca gente salen menos
- *   de cinco: un juego de mesa con un solo jugador no tiene gracia.
- * - El juego se elige después de saber cuántos se sientan en esa mesa, y solo
- *   entre los que admiten ese número exacto. Con 21 personas la primera mesa es
- *   de 5 y ahí no entra un juego de dos.
- * - Ningún juego se repite en la misma tirada.
+ * La página ya no reparte a nadie: pide `GET /api/sorteo` y pinta la tirada que
+ * está guardada, así todos ven la misma. Vuelve a preguntar cada quince segundos,
+ * para que sortear desde un celular le llegue solo a la pantalla y a los invitados.
  */
-function sortearMesas() {
+async function cargarSorteo() {
+  if (!document.getElementById('mesas-grid')) return;
+
+  try {
+    const res = await fetch('/api/sorteo');
+    if (!res.ok) return;
+    const datos = await res.json();
+
+    // Sin tirada todavía, o la misma de hace un rato: no hay nada que repintar.
+    if (!datos.sorteo || datos.id === sorteoId) return;
+
+    sorteoId = datos.id;
+    pintarSorteo(datos.sorteo);
+  } catch {
+    // Falla silenciosa: se queda en pantalla lo que ya estaba.
+  }
+}
+
+/** El botón pide el PIN antes de sortear: lo tienen los anfitriones. */
+function prepararSorteo() {
+  const boton = document.getElementById('btn-sorteo');
+  const form = document.getElementById('sorteo-pin');
+  if (!boton || !form) return;
+
+  const pin = document.getElementById('pin');
+  const error = document.getElementById('pin-error');
+  const enviar = form.querySelector('.btn-pin');
+
+  function cerrarPin() {
+    form.classList.add('hidden');
+    form.reset();
+    error.classList.add('hidden');
+    boton.classList.remove('hidden');
+  }
+
+  boton.addEventListener('click', () => {
+    boton.classList.add('hidden');
+    form.classList.remove('hidden');
+    pin.focus();
+  });
+
+  document.getElementById('btn-pin-cancelar').addEventListener('click', cerrarPin);
+
+  form.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    error.classList.add('hidden');
+    enviar.disabled = true;
+    enviar.textContent = 'Sorteando…';
+
+    try {
+      const res = await fetch('/api/sorteo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pin.value }),
+      });
+      const datos = await res.json();
+
+      if (!res.ok) {
+        error.textContent = datos.error ?? 'No se pudo sortear.';
+        error.classList.remove('hidden');
+        pin.select();
+        return;
+      }
+
+      sorteoId = datos.id;
+      pintarSorteo(datos.sorteo);
+      cerrarPin();
+    } catch {
+      error.textContent = 'No se pudo sortear. Revisa la conexión.';
+      error.classList.remove('hidden');
+    } finally {
+      enviar.disabled = false;
+      enviar.textContent = 'Sortear';
+    }
+  });
+}
+
+/** Pinta las cuatro mesas y la final con lo que vino del servidor. */
+function pintarSorteo(sorteo) {
   const grid = document.getElementById('mesas-grid');
+  const final = document.getElementById('mesa-final');
   const boton = document.getElementById('btn-sorteo');
   if (!grid) return;
 
-  if (catalogo.length === 0 || confirmados.length === 0) {
-    grid.innerHTML = '';
-    avisoSorteo(catalogo.length === 0
-      ? 'Todavía estamos trayendo la ludoteca. Dale un segundo y vuelve a intentar.'
-      : 'Aún no hay nadie confirmado para repartir. ¡Que alguien se anime primero!');
-    return;
-  }
-
-  const mesas = Math.max(1, Math.min(MESAS, Math.floor(confirmados.length / 2)));
-  const gente = mezclar(confirmados);
-  const usados = new Set();
-  let apretadas = 0;
-
-  const reparto = repartirEn(confirmados.length, mesas).map((tam) => {
-    const libres = catalogo.filter((j) => !usados.has(j.slug));
-    const caben = libres.filter((j) => entra(j, tam));
-    if (caben.length === 0) apretadas++;
-
-    const juego = alAzar(caben.length > 0 ? caben : libres);
-    usados.add(juego.slug);
-    return { juego, jugadores: gente.splice(0, tam) };
-  });
-
-  grid.innerHTML = reparto.map(renderMesa).join('');
-  avisoSorteo(textoAviso(mesas, apretadas));
+  grid.innerHTML = sorteo.mesas.map(renderMesa).join('');
+  if (final) final.innerHTML = renderFinal(sorteo.final);
   if (boton) boton.textContent = '🎲 Sortear otra vez';
-}
 
-/** Reparte n personas en m mesas lo más parejo posible: 21 en 5 → [5, 4, 4, 4, 4]. */
-function repartirEn(n, m) {
-  const base = Math.floor(n / m);
-  const sobran = n % m;
-  return Array.from({ length: m }, (_, i) => base + (i < sobran ? 1 : 0));
-}
-
-/** ¿Ese juego se puede jugar siendo exactamente esa cantidad? */
-function entra(juego, cuantos) {
-  const [min, max] = juego.jugadores ?? [];
-  return Number.isFinite(min) && Number.isFinite(max) && cuantos >= min && cuantos <= max;
+  const apretadas = sorteo.mesas.filter((m) => m.apretada).length;
+  avisoSorteo(apretadas === 0 ? '' : apretadas === 1
+    ? 'A una mesa le tocó más gente de la que admite su juego; vuelvan a sortear.'
+    : `A ${apretadas} mesas les tocó más gente de la que admite su juego; vuelvan a sortear.`);
 }
 
 /** El aviso solo aparece cuando hay algo que explicar. */
@@ -500,41 +542,51 @@ function avisoSorteo(texto) {
   aviso.classList.toggle('hidden', !texto);
 }
 
-function textoAviso(mesas, apretadas) {
-  const partes = [];
-
-  if (mesas < MESAS) {
-    const cuantos = confirmados.length === 1 ? '1 confirmado' : `${confirmados.length} confirmados`;
-    const cuantas = mesas === 1 ? 'sale 1 mesa' : `salen ${mesas} mesas`;
-    partes.push(`Por ahora hay ${cuantos}, así que ${cuantas} en vez de ${MESAS}.`);
-  }
-
-  if (apretadas > 0) {
-    partes.push(apretadas === 1
-      ? 'A una mesa le tocó un juego que no cuadra con cuántos son; vuelvan a sortear.'
-      : `A ${apretadas} mesas les tocó un juego que no cuadra con cuántos son; vuelvan a sortear.`);
-  }
-
-  return partes.join(' ');
+function fichaLudoteca(slug) {
+  return `https://ludoteca.rafotijero.dev/#/juego/${encodeURIComponent(slug)}`;
 }
-function renderMesa({ juego, jugadores }, i) {
+
+/** Una pastilla por jugador. El nombre completo queda en el title: hay alias largos. */
+function pastilla(quien) {
+  const como = escapeHtml(quien);
+  return `<li title="${como}">${como}</li>`;
+}
+
+function renderMesa({ numero, juego, jugadores }) {
   const nombre = escapeHtml(juego.nombre);
-  const ficha = `https://ludoteca.rafotijero.dev/#/juego/${encodeURIComponent(juego.slug)}`;
-  const nombres = jugadores
-    .map((p) => {
-      const como = escapeHtml(p.alias || p.nombre);
-      return `<li title="${como}">${como}</li>`;
-    })
-    .join('');
 
   return `<article class="mesa">
-      <a class="mesa-cover" href="${ficha}" target="_blank" rel="noopener" title="${nombre}">
+      <a class="mesa-cover" href="${fichaLudoteca(juego.slug)}" target="_blank" rel="noopener" title="${nombre}">
         <img src="${escapeHtml(juego.imagen)}" alt="${nombre}" loading="lazy">
       </a>
       <div class="mesa-datos">
-        <p class="mesa-num">Mesa ${i + 1}</p>
+        <p class="mesa-num">Mesa ${numero}</p>
         <h3 class="mesa-juego">${nombre}</h3>
-        <ul class="mesa-jugadores">${nombres}</ul>
+        <ul class="mesa-jugadores">${jugadores.map(pastilla).join('')}</ul>
+      </div>
+    </article>`;
+}
+
+/**
+ * La final no es una mesa más: los anfitriones ya están dentro y los demás
+ * lugares siguen vacíos hasta que cada mesa tenga su ganador.
+ */
+function renderFinal({ juego, anfitriones, cupos }) {
+  const nombre = escapeHtml(juego.nombre);
+  const libres = Array.from(
+    { length: cupos },
+    (_, i) => `<li class="mesa-cupo">Ganador Mesa ${i + 1}</li>`
+  ).join('');
+
+  return `<article class="mesa mesa-final">
+      <a class="mesa-cover" href="${fichaLudoteca(juego.slug)}" target="_blank" rel="noopener" title="${nombre}">
+        <img src="${escapeHtml(juego.imagen)}" alt="${nombre}" loading="lazy">
+      </a>
+      <div class="mesa-datos">
+        <p class="mesa-num">🏆 La final</p>
+        <h3 class="mesa-juego">${nombre}</h3>
+        <ul class="mesa-jugadores">${anfitriones.map(pastilla).join('')}${libres}</ul>
+        <p class="mesa-nota">Los anfitriones entran de frente. Los demás lugares se ganan en las mesas.</p>
       </div>
     </article>`;
 }

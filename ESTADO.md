@@ -18,10 +18,11 @@ src/
   asistencia.js         → POST /api/asistencia — baja / regreso a la lista
   participantes.js      → GET /api/participantes — lista de confirmados
   ludoteca.js           → GET /api/ludoteca — resumen del catálogo de ludoteca.rafotijero.dev
+  sorteo.js             → GET/POST /api/sorteo — la tirada de mesas vigente
   validacion.js         → catálogo de frases y validación compartida
   http.js               → helper json() para las respuestas
 wrangler.toml           → config del Worker: assets desde public/ + binding D1
-schema.sql              → definición de la tabla participantes (ya aplicada en D1)
+schema.sql              → definición de las tablas participantes y sorteos (ya aplicada en D1)
 migraciones/            → cambios de esquema sobre una base que ya tiene datos
 package.json            → sin dependencias; scripts dev/deploy con wrangler
 ```
@@ -57,9 +58,9 @@ En este orden: **Invitación → Programa → Asistencia → Participantes → L
   cuenta de juegos, tres pastillas de datos, ocho portadas al azar (cada una enlaza a su
   ficha) y un botón a la ludoteca. Los datos llegan de `GET /api/ludoteca`; si esa llamada
   falla, la tarjeta se queda con el texto y el botón que ya trae el HTML.
-- **A jugar** — un botón que sortea cinco mesas: a cada una le toca un juego de la
-  ludoteca y un grupo de los confirmados. Se puede volver a sortear las veces que sea.
-  Todo pasa en el navegador con las dos listas ya cargadas, sin pedir nada de nuevo.
+- **A jugar** — las cuatro mesas de la noche y la final, con quién se sienta en cada
+  una. El sorteo lo arma el servidor y lo ve igual todo el mundo; sortear de nuevo pide
+  el PIN de anfitrión. La final va aparte, en dorado, con los anfitriones ya dentro.
 
 ### Editar un registro
 
@@ -90,19 +91,37 @@ viene en la respuesta.
 
 ### Cómo reparte el sorteo
 
-Está todo en `sortearMesas()`. Tres reglas que no se ven en la pantalla:
+El sorteo se arma en `src/sorteo.js` y se guarda en la tabla `sorteos`, una fila por
+tirada. **La página ya no sortea nada:** pide `GET /api/sorteo` y pinta la última, así
+que todos ven lo mismo sin importar desde qué teléfono miren.
 
-- **Mesas de dos para arriba.** Son `min(5, floor(confirmados / 2))` mesas, con una
-  mínima: con 9 confirmados salen 4 mesas, no 5 con alguien jugando solo.
-- **Primero el tamaño, después el juego.** Se reparte a la gente lo más parejo posible
-  (21 en 5 mesas → 5, 4, 4, 4, 4) y recién entonces cada mesa sortea su juego entre los
-  que admiten ese número exacto de jugadores. Si no queda ninguno que cuadre, se usa
-  cualquiera y el aviso lo dice.
-- **Sin repetir juego** dentro de la misma tirada.
+- **Los juegos son fijos**, elegidos a mano para esta edición: Fantasma Blitz, Dobble,
+  Taco Gato Cabra Queso Pizza y Ouch!, y Mal Trago para la final. Están en `JUEGOS` y
+  `JUEGO_FINAL`; la portada sale del slug, que la ludoteca guarda con el mismo patrón.
+- **Los anfitriones no juegan la primera ronda.** Los que tienen `anfitrion = 1` salen
+  del reparto y aparecen en la final, junto con un cupo vacío por mesa que se llena con
+  el ganador de cada una.
+- **Primero el tamaño, después el acomodo.** Se reparte a la gente lo más parejo posible
+  y se le da la mesa más llena al juego que admite más. Ouch! es de cinco como mucho,
+  así que si le cae una mesa más grande se le pasa gente a la que tenga sitio. Con 22
+  jugadores salen 6, 6, 5 y 5. Pasando los 29 ya no alcanza y la mesa queda `apretada`,
+  que es lo que dispara el aviso bajo el botón.
 
-La gente sale de `GET /api/participantes` y los juegos de `GET /api/ludoteca`, ambas ya
-cargadas al abrir la página y guardadas en `confirmados` y `catalogo`. El nombre que se
-muestra es el alias, o el nombre de pila si la persona eligió usarlo.
+De cada jugador se guarda solo cómo se llama en la mesa —su alias, o su nombre si no
+puso uno—, nunca el DNI: `GET /api/sorteo` es público y lo lee cualquiera.
+
+La respuesta va con `Cache-Control: no-store`. No es un detalle: con la caché de una
+hora que usa la ludoteca, media fiesta seguiría viendo las mesas viejas después de
+resortear. La página además repregunta cada 15 segundos (`REFRESCO` en `script.js`),
+para que sortear desde un celular le llegue solo a la pantalla proyectada.
+
+### El PIN del sorteo
+
+Sortear pide un PIN que está **escrito en el código**, en `src/sorteo.js`. Es a
+propósito: la fiesta es una noche, el botón solo rehace las mesas y no hay nada que
+proteger más allá de que un invitado las rehaga a medianoche. Para cambiarlo, cambiar
+esa línea y hacer push. El campo es `type="password"` porque esto se proyecta: así no
+queda leyéndose en la pared mientras se escribe.
 
 ### Darse de baja (y volver)
 
@@ -173,13 +192,6 @@ y centrarlo en un lienzo de 1200x630 con el color `--cream` (#fdf7ec).
 
 ## Pendiente: funcionalidades futuras
 
-- **Sorteo compartido** — hoy el sorteo de "A jugar" pasa entero en el navegador y no se
-  guarda en ningún lado: cada quien que aprieta el botón ve un reparto distinto, y el
-  que armó Rafo en su celular no es el que ve nadie más. Para el sábado 31 conviene que
-  haya una sola tirada válida: una tabla en D1 con el sorteo vigente (fecha, y por mesa
-  el juego y los DNI que le tocaron), un `POST /api/sorteo` que lo arme y lo guarde, y un
-  `GET /api/sorteo` que devuelva el último. Decidir también quién puede sortear, porque
-  si el botón queda abierto cualquiera rehace las mesas en medio de la noche.
-- **Torneo** — el reparto en mesas ya está (sección "A jugar"), falta lo de competencia:
-  registrar el ganador de cada mesa y armar el avance a la final con su bracket. Depende
-  del sorteo compartido: sin una tirada guardada no hay mesas a las que ponerles ganador.
+- **Torneo** — el reparto ya está y la final ya tiene sus cuatro cupos vacíos, falta
+  llenarlos: anotar el ganador de cada mesa y que aparezca en la final sin tener que
+  resortear. Sería otra ruta con el mismo PIN, escribiendo sobre la tirada vigente.

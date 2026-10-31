@@ -337,14 +337,27 @@
   <div class="section-inner">
     <div class="section-icon">🎲</div>
     <h2 class="section-title">¡A <span>jugar</span>!</h2>
-    <p class="section-sub">Cinco juegos al azar y quién se sienta en cada mesa. Si no les convence lo que salió, vuelvan a sortear.</p>
+    <p class="section-sub">Cuatro mesas, cuatro juegos y los anfitriones esperando en la final. El sorteo es uno solo: lo que sale acá es lo que ve todo el mundo.</p>
 
     <button class="btn-sorteo" id="btn-sorteo" type="button">🎲 ¡A jugar!</button>
 
-    <!-- Aviso para los casos raros: nadie confirmado todavía, o menos de cinco. -->
+    <!-- Sortear pide el PIN de anfitrión. Va en type="password" porque esto se
+         proyecta: así no queda leyéndose en la pared mientras se escribe. -->
+    <form class="sorteo-pin hidden" id="sorteo-pin" autocomplete="off">
+      <label for="pin">PIN de anfitrión</label>
+      <div class="sorteo-pin-fila">
+        <input type="password" id="pin" name="pin" placeholder="••••••" autocomplete="off" maxlength="24" required>
+        <button type="submit" class="btn-pin">Sortear</button>
+        <button type="button" class="btn-link" id="btn-pin-cancelar">Cancelar</button>
+      </div>
+      <p class="form-error hidden" id="pin-error"></p>
+    </form>
+
+    <!-- Aviso para los casos raros: alguna mesa con más gente de la que admite. -->
     <p class="sorteo-aviso hidden" id="sorteo-aviso"></p>
 
     <div class="mesas-grid" id="mesas-grid"></div>
+    <div id="mesa-final"></div>
   </div>
 </section>
 

@@ -3,6 +3,7 @@ import { participantes } from './src/participantes.js';
 import { consulta } from './src/consulta.js';
 import { asistencia } from './src/asistencia.js';
 import { ludoteca } from './src/ludoteca.js';
+import { sortear, sorteoActual } from './src/sorteo.js';
 import { json } from './src/http.js';
 
 export default {
@@ -29,6 +30,12 @@ export default {
     if (pathname === '/api/participantes') {
       if (metodo !== 'GET') return json({ error: 'Método no permitido.' }, 405);
       return participantes(env);
+    }
+
+    if (pathname === '/api/sorteo') {
+      if (metodo === 'GET') return sorteoActual(env);
+      if (metodo === 'POST') return sortear(request, env);
+      return json({ error: 'Método no permitido.' }, 405);
     }
 
     if (pathname === '/api/ludoteca') {

@@ -459,6 +459,28 @@
     text-align:center;
   }
 
+  /* La final se distingue de las mesas: va en dorado y con la copa delante. */
+  .mesa-final{
+    margin-top:14px;
+    background:linear-gradient(135deg, #fff 0%, var(--cream-2) 100%);
+    border:2px solid var(--gold);
+    box-shadow:0 10px 26px rgba(245,152,31,0.18);
+  }
+  .mesa-final .mesa-cover{ border-color:var(--gold); }
+  .mesa-final .mesa-num{ color:var(--gold); }
+  /* Los lugares que todavía no tienen dueño: se ven vacíos a propósito. */
+  .mesa-cupo{
+    background:transparent;
+    border:1.5px dashed var(--teal-soft);
+    color:var(--ink);
+    opacity:0.7;
+    font-style:italic;
+  }
+  .mesa-nota{
+    margin-top:10px;
+    font-size:12.5px; color:var(--ink); opacity:0.75;
+  }
+
   .participants-empty{
     text-align:center;
     color:var(--ink);
@@ -598,6 +620,51 @@
     box-shadow:0 14px 26px rgba(47,143,136,0.36);
   }
   .btn-sorteo:active{ transform:translateY(0); }
+  /* La caja del PIN aparece en el lugar del botón, sin mover la sección. */
+  .sorteo-pin{
+    margin-top:28px;
+    display:inline-flex; flex-direction:column; align-items:center; gap:10px;
+    background:#fff;
+    border:1.5px solid var(--teal-pale);
+    border-radius:20px;
+    padding:18px 22px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.06);
+  }
+  .sorteo-pin label{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:13px;
+    letter-spacing:0.6px; text-transform:uppercase;
+    color:var(--teal);
+  }
+  .sorteo-pin-fila{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .sorteo-pin input{
+    font-family:'Quicksand', sans-serif;
+    font-size:16px; font-weight:700;
+    letter-spacing:4px;
+    width:150px;
+    padding:10px 14px;
+    border:1.5px solid var(--teal-soft);
+    border-radius:12px;
+    color:var(--ink-dark);
+    background:#fff;
+    outline:none;
+    transition:border-color .2s;
+  }
+  .sorteo-pin input:focus{ border-color:var(--teal); }
+  .btn-pin{
+    background:var(--teal);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:15px;
+    border:none; border-radius:12px;
+    padding:11px 22px;
+    cursor:pointer;
+    transition:opacity .15s;
+  }
+  .btn-pin:hover{ opacity:0.88; }
+  .btn-pin:disabled{ opacity:0.6; cursor:progress; }
+  .sorteo-pin .form-error{ margin-top:0; }
+
   .sorteo-aviso{
     margin-top:16px;
     font-size:13.5px; color:var(--ink); opacity:0.8;
