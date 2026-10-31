@@ -126,6 +126,32 @@
     font-size:14px; letter-spacing:2px;
   }
 
+  /* La cuenta regresiva del día del fest: late despacio para que se note sin
+     pelearle el protagonismo al logo. */
+  .cuenta{
+    /* En bloque y centrada: como inline-block se le pegaba al costado de la banda. */
+    display:block;
+    width:fit-content;
+    margin:20px auto 0;
+    background:var(--coral-pale);
+    border:1.5px solid var(--coral);
+    border-radius:999px;
+    padding:10px 22px;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800; font-size:16.5px;
+    color:var(--pink);
+    box-shadow:0 8px 18px rgba(241,145,149,0.25);
+    animation:latido 2.6s ease-in-out infinite;
+  }
+  @keyframes latido{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.045); }
+  }
+  /* A quien le molesten las animaciones, la píldora se le queda quieta. */
+  @media (prefers-reduced-motion: reduce){
+    .cuenta{ animation:none; }
+  }
+
 
   .info-row{
     display:flex; flex-wrap:wrap; gap:14px; justify-content:center;

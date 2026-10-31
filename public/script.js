@@ -1,6 +1,13 @@
 const FECHA_EVENTO = '31 de octubre';
 
 /** Cuántas mesas arma el sorteo (menos, si no hay gente para tantas). */
+// Las horas del fest, como instantes fijos en UTC: así el contador dice lo mismo
+// en un celular con la zona horaria cambiada. 6:00 p.m. de Lima son las 23:00 UTC.
+const DIA_DEL_FEST = Date.UTC(2026, 9, 31, 5);  // medianoche del 31 en Lima
+const EMPIEZA = Date.UTC(2026, 9, 31, 23);      // 6:00 p.m., llegada de invitados
+const MEDIANOCHE = Date.UTC(2026, 10, 1, 5);    // las 12, cuando toca el cumple
+const SE_APAGA = Date.UTC(2026, 10, 1, 9);      // 4 a.m.: ya no hay nada que anunciar
+
 // Cada cuánto se vuelve a preguntar por el sorteo vigente. Sortear desde un
 // celular tiene que llegarle a la pantalla proyectada sin que nadie recargue.
 const REFRESCO = 15000;
@@ -18,6 +25,9 @@ const DESPEDIDAS = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+  cuentaRegresiva();
+  setInterval(cuentaRegresiva, 30000);
+
   cargarParticipantes();
   cargarLudoteca();
 
@@ -431,6 +441,42 @@ function mezclar(lista) {
     [copia[i], copia[j]] = [copia[j], copia[i]];
   }
   return copia;
+}
+
+/**
+ * La píldora del hero el día del fest. Va cambiando sola: cuánto falta, que ya
+ * empezó y, pasada la medianoche, el cumpleaños. Antes de ese día no aparece, y de
+ * madrugada se apaga: una página que sigue anunciando una fiesta que ya pasó queda
+ * peor que no decir nada.
+ */
+function cuentaRegresiva() {
+  const cuenta = document.getElementById('cuenta');
+  if (!cuenta) return;
+
+  const texto = textoCuenta(Date.now());
+  cuenta.textContent = texto;
+  cuenta.classList.toggle('hidden', !texto);
+}
+
+function textoCuenta(ahora) {
+  if (ahora < DIA_DEL_FEST || ahora >= SE_APAGA) return '';
+  if (ahora >= MEDIANOCHE) return '🎂 Ya es el cumple';
+  if (ahora >= EMPIEZA) return '🎲 ¡Ya empezó! La mesa está servida';
+  return `🎉 ¡Es hoy! ${loQueFalta(EMPIEZA - ahora)}`;
+}
+
+/** "Faltan 9 h 30 min", "Faltan 42 min", "Ya mismo". */
+function loQueFalta(ms) {
+  const minutos = Math.floor(ms / 60000);
+  const horas = Math.floor(minutos / 60);
+  const sueltos = minutos % 60;
+
+  if (horas > 0 && sueltos > 0) return `Faltan ${horas} h ${sueltos} min`;
+  if (horas > 1) return `Faltan ${horas} horas`;
+  if (horas === 1) return 'Falta 1 hora';
+  if (sueltos > 1) return `Faltan ${sueltos} min`;
+  if (sueltos === 1) return 'Falta 1 min';
+  return 'Ya mismo';
 }
 
 /**

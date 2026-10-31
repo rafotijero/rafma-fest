@@ -40,6 +40,11 @@ En este orden: **Invitación → Programa → Asistencia → Participantes → L
 
 - **Invitación** — hero con logo, fecha, ubicación (link a Google Maps) y frase de invitación.
   El "Descubre más" del final es un enlace a `#programa`, que es la sección que sigue.
+  Bajo la fecha hay una píldora (`.cuenta`) que **solo aparece el día del fest** y va
+  cambiando sola: cuánto falta, luego "¡Ya empezó!" y, pasada la medianoche, el cumple.
+  A las 4 a.m. se apaga, para que la página no siga anunciando una fiesta que ya pasó.
+  Las cuatro horas están en `script.js` como instantes UTC, no como fechas locales: un
+  celular con la zona horaria cambiada vería mal el contador si se calculara con la suya.
 - **Programa** — el cronograma de la noche, en HTML fijo. Siete hitos: llegada (6:00),
   piqueos y tragos (7:30), "Una RAFMA historia" (8:30, una fábula con premio a las tres
   personas más atentas), Torneo de Mesas (10:00), final y premiaciones (11:00), Happy Birthday (medianoche)
